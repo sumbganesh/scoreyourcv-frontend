@@ -12,7 +12,7 @@ export default defineConfig({
         },
     },
     preview: {
-        allowedHosts: ["scoreyour.cv"],
+        allowedHosts: ["scoreyour.cv", "www.scoreyour.cv"],
     },
     build: {
         rollupOptions: {
