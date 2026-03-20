@@ -11,6 +11,9 @@ export default defineConfig({
             $lib: path.resolve("./src/lib"),
         },
     },
+    preview: {
+        allowedHosts: ["scoreyour.cv"],
+    },
     build: {
         rollupOptions: {
             input: {
