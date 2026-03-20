@@ -351,6 +351,26 @@
 		),
 	);
 
+	const truncateText = (value: string, maxChars: number) => {
+		if (value.length <= maxChars) {
+			return value;
+		}
+		return `${value.slice(0, maxChars)}…`;
+	};
+	const formatBackendErrorDetails = (details: unknown) => {
+		if (!details) {
+			return "";
+		}
+		if (typeof details === "string") {
+			return truncateText(details.trim(), 800);
+		}
+		try {
+			return truncateText(JSON.stringify(details, null, 2), 800);
+		} catch {
+			return "";
+		}
+	};
+
 	const backendUrl =
 		import.meta.env.VITE_BACKEND_URL ?? "http://localhost:3000";
 	let hasTrackedInitialMode = false;
@@ -495,8 +515,10 @@
 			const payload = await response.json().catch(() => null);
 			if (!response.ok) {
 				stage = "form";
-				submitError =
+				const message =
 					payload?.error?.message ?? "Unable to submit the form.";
+				const details = formatBackendErrorDetails(payload?.error?.details);
+				submitError = details ? `${message}\n\n${details}` : message;
 				trackEvent("screening_submit_failed", {
 					status_code: response.status,
 					error_code: payload?.error?.code ?? "UNKNOWN",
@@ -851,7 +873,7 @@ ${improvements
 											: "Generate ATS score"}
 									</Button>
 									{#if submitError}
-										<p class="text-xs text-destructive">
+										<p class="text-xs text-destructive whitespace-pre-line break-words">
 											{submitError}
 										</p>
 									{/if}
